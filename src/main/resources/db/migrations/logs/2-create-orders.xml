@@ -1,0 +1,30 @@
+﻿<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2" author="mokhirbek">
+        <createTable tableName="orders">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="chat_id" type="BIGINT"/>
+            <column name="contact_number" type="VARCHAR(50)"/>
+            <column name="leaving_date" type="VARCHAR(50)"/>
+            <column name="from_city" type="VARCHAR(100)"/>
+            <column name="to_city" type="VARCHAR(100)"/>
+            <column name="passengers_count" type="INT"/>
+            <column name="latitude" type="INT"/>
+            <column name="longitude" type="INT"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="client_id"
+                referencedTableName="user_state"
+                referencedColumnNames="id"
+                constraintName="fk_orders_user_state"/>
+    </changeSet>
+</databaseChangeLog>

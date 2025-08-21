@@ -1,0 +1,252 @@
+[
+  {
+    "pageCode": "lang",
+    "messageCode": ["choose.language"],
+    "previousPageCode": null,
+    "buttons": [
+      {
+        "textCode": "uz.flag",
+        "nextPageCode": "role",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "ru.flag",
+        "nextPageCode": "role",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "eng.flag",
+        "nextPageCode": "role",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "role",
+    "messageCode": ["choose.option"],
+    "previousPageCode": "lang",
+    "buttons": [
+      {
+        "textCode": "btn.driver",
+        "nextPageCode": "driver",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.passenger",
+        "nextPageCode": "passenger",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "passenger",
+    "messageCode": ["passenger.menu"],
+    "previousPageCode": "role",
+    "buttons": [
+      {
+        "textCode": "btn.create.order",
+        "nextPageCode": "phone_number",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.my.orders",
+        "nextPageCode": "my_orders",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "phone_number",
+    "messageCode": ["share.phone.number"],
+    "previousPageCode": "passenger",
+    "buttons": [
+      {
+        "textCode": "btn.share.contact",
+        "nextPageCode": "order_from",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "order_from",
+    "messageCode": ["send.location"],
+    "previousPageCode": "phone_number",
+    "buttons": [
+      {
+        "textCode": "btn.city.kokand",
+        "nextPageCode": "order_to",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.city.tashkent",
+        "nextPageCode": "order_to",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.share.location",
+        "nextPageCode": "order_to",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "order_to",
+    "messageCode": ["send.location"],
+    "previousPageCode": "order_from",
+    "buttons": [
+      {
+        "textCode": "btn.city.kokand",
+        "nextPageCode": "order_date",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.city.tashkent",
+        "nextPageCode": "order_date",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.share.location",
+        "nextPageCode": "order_date",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "order_date",
+    "messageCode": ["departure.date"],
+    "previousPageCode": "order_to",
+    "buttons": [
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "order_seats",
+    "messageCode": ["seats"],
+    "previousPageCode": "order_date",
+    "buttons": [
+      {
+        "textCode": "btn.seats.minus",
+        "nextPageCode": "seats_minus",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "0",
+        "nextPageCode": "current_seats",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.seats.plus",
+        "nextPageCode": "seats_plus",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.save",
+        "nextPageCode": "add_comment",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "add_comment",
+    "messageCode": ["order.comment"],
+    "previousPageCode": "order_seats",
+    "buttons": [
+      {
+        "textCode": "btn.skip",
+        "nextPageCode": "check_order",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "check_order",
+    "messageCode": ["check.order", "your.order.full"],
+    "previousPageCode": "add_comment",
+    "buttons": [
+      {
+        "textCode": "btn.confirm",
+        "nextPageCode": "confirm_order",
+        "buttonType": "InlineKeyboardMarkup",
+        "url": null
+      },
+      {
+        "textCode": "btn.back",
+        "nextPageCode": "previous_page",
+        "buttonType": "ReplyKeyboardMarkup",
+        "url": null
+      }
+    ]
+  },
+  {
+    "pageCode": "confirm_order",
+    "messageCode": ["confirm.order"],
+    "previousPageCode": "check_order",
+    "buttons": []
+  }
+]
