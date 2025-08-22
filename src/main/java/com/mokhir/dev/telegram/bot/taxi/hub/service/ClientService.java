@@ -4,6 +4,7 @@ import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
 import com.mokhir.dev.telegram.bot.taxi.hub.repository.UserStateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -14,7 +15,9 @@ public class ClientService {
     private final UserStateRepository userStateRepository;
 
 
-    public UserState getOrCreate(Long userId) {
+    public UserState getOrCreate(Update update) {
+        Long userId = getUserId(update);
+        String userName = getUserName(update);
         Optional<UserState> byId = userStateRepository.findByUserId(userId);
         if (byId.isPresent()) {
             return byId.get();
@@ -23,12 +26,23 @@ public class ClientService {
                     .builder()
                     .userId(userId)
                     .currentPageCode("start")
+                    .userName(userName)
                     .locale("uz")
                     .orders(new ArrayList<>())
                     .build();
             userStateRepository.save(newUserState);
             return newUserState;
         }
+    }
+
+    private String getUserName(Update update) {
+        return update.hasMessage() ?
+                update.getMessage().getFrom().getUserName() : update.getCallbackQuery().getFrom().getUserName();
+    }
+
+    private Long getUserId(Update update) {
+        return update.hasMessage() ?
+                update.getMessage().getFrom().getId() : update.getCallbackQuery().getFrom().getId();
     }
 
     public void save(UserState userState) {
