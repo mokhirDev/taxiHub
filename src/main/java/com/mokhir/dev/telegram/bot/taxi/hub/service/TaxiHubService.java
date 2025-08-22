@@ -66,6 +66,7 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
                     .replyMarkup(inlineKeyboard)
                     .build();
             executeMessage(sendMessage);
+
         } else if (replyKeyboard != null) {
             replyKeyboard.setOneTimeKeyboard(true);
             SendMessage sendMessage = SendMessage.builder()
