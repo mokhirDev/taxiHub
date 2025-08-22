@@ -3,7 +3,6 @@ package com.mokhir.dev.telegram.bot.taxi.hub.service;
 import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -27,16 +21,14 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
 
     private final BotConfig botConfig;
     private final BotNavigationService navigationService;
-    private final BotPageService botPageService;
     private final ButtonService buttonService;
     private final ClientService clientService;
     private final LocalizationService localizationService;
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        Long userId = update.getMessage().getFrom().getId();
-        UserState user = clientService.getOrCreate(userId);
-        if (update.getMessage().getText().equals("/start")) {
+        UserState user = clientService.getOrCreate(update);
+        if (update.hasMessage() && update.getMessage().getText().equals("/start")) {
             clientService.resetUserStatus(user);
         }
         PageDto nextPage = navigationService.getNextPage(user, update);

@@ -28,3 +28,7 @@ telegram:
   bots:
     bot-token: "8396733420:AAHn1NIwpil9wgxD10ew-5XI_70JFTuiAA4"
     bot-username: "MohirTaxiBot"
+
+logging:
+  level:
+    liquibase: debug

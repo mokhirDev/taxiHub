@@ -2,15 +2,23 @@
   {
     "pageCode": "start",
     "message": [],
-    "previousPageCode": null,
-    "buttons": [[]]
+    "condition": [],
+    "nextPage": [
+      "lang"
+    ],
+    "buttons": [
+      []
+    ]
   },
   {
     "pageCode": "lang",
     "message": [
       "choose.language"
     ],
-    "previousPageCode": "start",
+    "condition": [],
+    "nextPage": [
+      "role"
+    ],
     "buttons": [
       [
         {
@@ -39,20 +47,27 @@
     "message": [
       "choose.option"
     ],
-    "previousPageCode": "lang",
+    "condition": [
+      "uz",
+      "ru",
+      "en",
+      "back"
+    ],
+    "nextPage": [
+      "driver_menu",
+      "passenger_menu"
+    ],
     "buttons": [
       [
         {
           "textCode": "btn.driver",
           "callBack": "driver_menu",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.passenger",
           "callBack": "passenger_menu",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
@@ -62,27 +77,25 @@
     "message": [
       "driver.menu"
     ],
-    "previousPageCode": "role",
+    "condition": [
+      "driver_menu"
+    ],
+    "nextPage": [
+      "role"
+    ],
     "buttons": [
       [
         {
           "textCode": "join.to.group",
           "callBack": null,
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "role",
-              "value": "driver"
-            }
-          ]
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.back",
-          "callBack": "role",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "callBack": "back",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
@@ -92,214 +105,197 @@
     "message": [
       "passenger.menu"
     ],
-    "previousPageCode": "role",
+    "condition": [
+      "passenger_menu",
+      "main.menu",
+      "cancel_order"
+    ],
+    "nextPage": [
+      "phone_number",
+      "my_orders",
+      "role"
+    ],
     "buttons": [
       [
         {
           "textCode": "btn.create.order",
-          "callBack": "phone_number",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "role",
-              "value": "passenger"
-            }
-          ]
+          "callBack": "create_order",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.my.orders",
           "callBack": "my_orders",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "role",
-              "value": "passenger"
-            }
-          ]
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.back",
-          "callBack": "role",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "callBack": "back",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "phone_number",
+    "condition": [
+      "create_order"
+    ],
+    "nextPage": [
+      "order_from"
+    ],
     "message": [
       "share.phone.number"
     ],
-    "previousPageCode": "passenger_menu",
     "buttons": [
       [
         {
           "textCode": "btn.share.contact",
-          "buttonType": "ReplyKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "input_exists",
-              "field": "phone"
-            }
-          ]
+          "buttonType": "ReplyKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "order_from",
+    "condition": [],
+    "nextPage": [
+      "order_to"
+    ],
     "message": [
       "send.location"
     ],
-    "previousPageCode": "phone_number",
     "buttons": [
       [
         {
           "textCode": "btn.city.kokand",
-          "callBack": "order_to",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "has_phone",
-              "value": true
-            }
-          ]
+          "callBack": "kokand",
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.city.tashkent",
-          "callBack": "order_to",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "has_phone",
-              "value": true
-            }
-          ]
+          "callBack": "tashkent",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "order_to",
+    "condition": [
+      "kokand",
+      "tashkent"
+    ],
+    "nextPage": [
+      "order_date"
+    ],
     "message": [
       "send.location"
     ],
-    "previousPageCode": "order_from",
     "buttons": [
       [
         {
           "textCode": "btn.city.kokand",
-          "callBack": "order_date",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "has_from_location",
-              "value": true
-            }
-          ]
+          "callBack": "kokand",
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.city.tashkent",
-          "callBack": "order_date",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "has_from_location",
-              "value": true
-            }
-          ]
+          "callBack": "tashkent",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "order_date",
+    "condition": [
+      "kokand",
+      "tashkent"
+    ],
+    "nextPage": [
+      "order_seats"
+    ],
     "message": [
       "departure.date"
-    ],
-    "previousPageCode": "order_to"
+    ]
   },
   {
     "pageCode": "order_seats",
+    "condition": [],
+    "nextPage": [
+      "add_comment"
+    ],
     "message": [
       "seats"
     ],
-    "previousPageCode": "order_date",
     "buttons": [
       [
         {
           "textCode": "btn.seats.minus",
           "callBack": "seat_minus",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "0",
           "callBack": "order_seats",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.seats.plus",
           "callBack": "seat_plus",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.save",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "has_seats",
-              "value": true
-            }
-          ]
+          "callBack": "save",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "add_comment",
+    "condition": [
+      "save"
+    ],
+    "nextPage": [
+      "check_order"
+    ],
     "message": [
       "order.comment"
     ],
-    "previousPageCode": "order_seats",
     "buttons": [
       [
         {
           "textCode": "btn.skip",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": []
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "check_order",
+    "condition": [],
+    "nextPage": [
+      "confirm_order",
+      "passenger_menu"
+    ],
     "message": [
       "check.order",
       "your.order.full"
     ],
-    "previousPageCode": "add_comment",
     "buttons": [
       [
         {
           "textCode": "btn.confirm",
-          "callBack": "confirm_order",
-          "buttonType": "InlineKeyboardMarkup",
-          "conditions": [
-            {
-              "type": "order_complete",
-              "value": true
-            }
-          ]
+          "callBack": "finish_order",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
@@ -314,10 +310,24 @@
   },
   {
     "pageCode": "confirm_order",
-    "message": [
-      "confirm.order"
+    "condition": [
+      "finish_order"
     ],
-    "previousPageCode": "check_order",
-    "buttons": []
+    "nextPage": [
+      "passenger_menu"
+    ],
+    "message": [
+      "confirm.order",
+      "order.full.detail"
+    ],
+    "buttons": [
+      [
+        {
+          "textCode": "btn.main.menu",
+          "callBack": "main.menu",
+          "buttonType": "InlineKeyboardMarkup"
+        }
+      ]
+    ]
   }
 ]
