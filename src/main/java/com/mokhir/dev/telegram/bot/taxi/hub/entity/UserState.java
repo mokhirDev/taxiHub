@@ -20,6 +20,8 @@ public class UserState {
     private Long id;
     @Column(name = "user_id")
     private Long userId;
+    @Column(name = "user_name")
+    private String userName;
     @Column(name ="locale")
     private String locale;
     @Enumerated(EnumType.STRING)
