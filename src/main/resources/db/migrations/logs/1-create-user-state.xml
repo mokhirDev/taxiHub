@@ -13,6 +13,7 @@
             <column name="user_name" type="VARCHAR(255)"/>
             <column name="locale" type="VARCHAR(50)"/>
             <column name="role" type="VARCHAR(50)"/>
+            <column name="last_message_id" type="VARCHAR(255)"/>
             <column name="has_phone" type="BOOLEAN"/>
             <column name="has_from_location" type="BOOLEAN"/>
             <column name="has_to_location" type="BOOLEAN"/>

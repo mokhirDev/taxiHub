@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class ButtonDto {
     private String textCode;
     private String callBack;
     private ButtonTypeEnum buttonType;
+    private Boolean contact;
+    private Boolean location;
     private String url;
-    private List<Condition> conditions;
 }

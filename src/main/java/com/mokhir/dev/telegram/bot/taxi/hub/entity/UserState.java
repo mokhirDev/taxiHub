@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -22,7 +21,7 @@ public class UserState {
     private Long userId;
     @Column(name = "user_name")
     private String userName;
-    @Column(name ="locale")
+    @Column(name = "locale")
     private String locale;
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -41,6 +40,8 @@ public class UserState {
     private boolean orderComplete;
     @Column(name = "current_page_code")
     private String currentPageCode;
+    @Column(name = "last_message_id")
+    private Integer lastMessageId;
     @OneToMany(mappedBy = "userState", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Orders> orders;
 }

@@ -3,16 +3,20 @@ package com.mokhir.dev.telegram.bot.taxi.hub.service;
 import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.ButtonTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import java.util.Locale;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
@@ -21,52 +25,63 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
 
     private final BotConfig botConfig;
     private final BotNavigationService navigationService;
-    private final ButtonService buttonService;
     private final ClientService clientService;
-    private final LocalizationService localizationService;
+    private final MessageBuilderService messageBuilder;
+    private final BotPageService botPageService;
 
     @Override
+    @Transactional
     public void processNonCommandUpdate(Update update) {
         UserState user = clientService.getOrCreate(update);
-        if (update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            clientService.resetUserStatus(user);
-        }
+        checkRestart(update, user);
         PageDto nextPage = navigationService.getNextPage(user, update);
+        PageDto currentPage = botPageService.getCurrentPage(user.getCurrentPageCode());
+        handleRemoveButtons(update, currentPage);
         sendMessage(user, nextPage);
+
         clientService.setCurrentPage(user, nextPage.getPageCode());
-        clientService.save(user);
     }
 
-    private void sendMessage(UserState userState, PageDto page) {
-        Locale locale = Locale.of(userState.getLocale());
-        StringBuilder message = new StringBuilder();
-        page.getMessage().forEach(mDto -> {
-            String localizedMessage = localizationService.getMessage(mDto, locale);
-            message.append(localizedMessage);
-            message.append("\n");
-        });
-
-        // Формируем клавиатуру (только одну)
-        InlineKeyboardMarkup inlineKeyboard = buttonService.buildInlineKeyboard(page.getButtons(), locale);
-        ReplyKeyboardMarkup replyKeyboard = buttonService.buildReplyKeyboard(page.getButtons(), locale);
-
-        // Выбираем, какую клавиатуру отправлять
-        if (inlineKeyboard != null) {
-            SendMessage sendMessage = SendMessage.builder()
-                    .chatId(userState.getUserId().toString())
-                    .text(message.toString())
-                    .replyMarkup(inlineKeyboard)
-                    .build();
-            executeMessage(sendMessage);
-
-        } else if (replyKeyboard != null) {
-            replyKeyboard.setOneTimeKeyboard(true);
-            SendMessage sendMessage = SendMessage.builder()
-                    .chatId(userState.getUserId().toString())
-                    .replyMarkup(replyKeyboard)
-                    .build();
-            executeMessage(sendMessage);
+    private void sendMessage(UserState user, PageDto nextPage) {
+        try {
+            if (notExistLastMessage(user)) {
+                sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
+            } else {
+                deleteMessage(messageBuilder.deleteMessage(user));
+                sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
+            }
+        } catch (RuntimeException e) {
+            sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
         }
+    }
+
+    private Boolean notExistLastMessage(UserState user) {
+        return user.getLastMessageId() == 0;
+    }
+
+    private void checkRestart(Update update, UserState user) {
+        if (update.hasMessage() && "/start".equals(update.getMessage().getText())) {
+            clientService.resetUserStatus(user);
+        }
+    }
+
+    private void handleRemoveButtons(Update update, PageDto currentPage) {
+        if (update.hasMessage()) {
+            if (update.getMessage().hasContact()) {
+                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Контакт получен ✅");
+            } else if (update.getMessage().hasLocation()) {
+                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Локация получена ✅");
+            } else if (hasReplyButton(currentPage)) {
+                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Контакт получен ✅");
+            }
+        }
+    }
+
+    private boolean hasReplyButton(PageDto currentPage) {
+        return currentPage.getButtons() != null &&
+                currentPage.getButtons().stream()
+                        .flatMap(Collection::stream)
+                        .anyMatch(e -> e.getButtonType().equals(ButtonTypeEnum.ReplyKeyboardMarkup));
     }
 
     @Override
@@ -79,11 +94,47 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
         return botConfig.getBotToken();
     }
 
-    public void executeMessage(SendMessage message) {
+    public void sendNewMessage(SendMessage newMessage, UserState user) {
+        try {
+            Message message = execute(newMessage);
+            user.setLastMessageId(message.getMessageId());
+            clientService.save(user);
+        } catch (Exception e) {
+            log.error("Ошибка при отправке SendMessage в чат {}: {}", newMessage.getChatId(), e.getMessage(), e);
+            throw new RuntimeException("Не удалось отправить сообщение", e);
+        }
+    }
+
+    public void editMessage(EditMessageText message) {
         try {
             execute(message);
         } catch (Exception e) {
-            log.error("Ошибка при отправке сообщения в чат {}: {}", message.getChatId(), e.getMessage());
+            log.error("Ошибка при редактировании сообщения {}: {}", message.getChatId(), e.getMessage(), e);
+            throw new RuntimeException("Не удалось отредактировать сообщение", e);
         }
+    }
+
+    public void deleteMessage(DeleteMessage message) {
+        try {
+            execute(message);
+        } catch (Exception e) {
+            log.error("Ошибка при удалении сообщения {}: {}", message.getChatId(), e.getMessage(), e);
+            throw new RuntimeException("Не удалось удалить сообщение", e);
+        }
+    }
+
+    public void deleteReplyButton(SendMessage message) {
+        try {
+            execute(message);
+        } catch (Exception e) {
+            log.error("Ошибка при удалении сообщения {}: {}", message.getChatId(), e.getMessage(), e);
+            throw new RuntimeException("Не удалось удалить сообщение", e);
+        }
+    }
+
+    public void removeKeyboard(Long chatId, String text) {
+        SendMessage message = new SendMessage(chatId.toString(), text);
+        message.setReplyMarkup(new ReplyKeyboardRemove(true));
+        deleteReplyButton(message);
     }
 }
