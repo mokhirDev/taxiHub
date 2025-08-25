@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public enum ButtonTypeEnum {
     InlineKeyboardMarkup,
-    ReplyKeyboardMarkup
+    ReplyKeyboardMarkup,
+    Date
 }

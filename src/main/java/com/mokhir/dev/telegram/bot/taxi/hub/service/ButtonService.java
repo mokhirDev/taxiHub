@@ -10,11 +10,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.*;
 
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.*;
 
 @Service
 @RequiredArgsConstructor
@@ -72,22 +72,23 @@ public class ButtonService {
         return keyboard.isEmpty() ? null : new InlineKeyboardMarkup(keyboard);
     }
 
-    /**
-     * Проверить, есть ли reply-кнопки.
-     */
-    public boolean hasReplyButtons(List<List<ButtonDto>> buttons) {
-        return buttons.stream()
-                .flatMap(List::stream)
-                .anyMatch(btn -> btn.getButtonType() == ButtonTypeEnum.ReplyKeyboardMarkup);
-    }
+    public InlineKeyboardMarkup buildDateInlineKeyboard(List<List<ButtonDto>> buttons, Locale locale) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
-    /**
-     * Удалить клавиатуру (Reply).
-     */
-    public ReplyKeyboardRemove removeKeyboard() {
-        return new ReplyKeyboardRemove(true);
-    }
+        for (List<ButtonDto> row : buttons) {
+            List<InlineKeyboardButton> inlineRow = new ArrayList<>();
+            for (ButtonDto btn : row) {
+                if (btn.getButtonType() == ButtonTypeEnum.Date) {
+                    inlineRow.add(toInlineDateButton(btn, locale));
+                }
+            }
+            if (!inlineRow.isEmpty()) {
+                keyboard.add(inlineRow);
+            }
+        }
 
+        return keyboard.isEmpty() ? null : new InlineKeyboardMarkup(keyboard);
+    }
     // ================== Приватные методы ==================
 
     private KeyboardButton toReplyButton(ButtonDto dto, Locale locale) {
@@ -111,4 +112,54 @@ public class ButtonService {
         }
         return button;
     }
+
+    private InlineKeyboardButton toInlineDateButton(ButtonDto dto, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        String textCode = dto.getTextCode();
+        Integer dayNumber = getDayNumber(textCode);
+        button.setText(getFullDay(textCode, locale));
+        button.setCallbackData(dayNumber.toString());
+        if (dto.getUrl() != null) {
+            button.setUrl(dto.getUrl());
+        }
+        return button;
+    }
+
+    public static Map<String, Integer> getCurrentWeekDays() {
+        Map<String, Integer> daysMap = new LinkedHashMap<>();
+        Locale locale = Locale.of("en");
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = monday.plusDays(i);
+
+            String dayShort = day.getDayOfWeek()
+                    .getDisplayName(TextStyle.SHORT, locale)
+                    .toLowerCase(locale);
+
+            daysMap.put(dayShort, day.getDayOfMonth());
+        }
+
+        return daysMap;
+    }
+
+    public static String getCurrentMonth() {
+        LocalDate today = LocalDate.now();
+        Locale locale = Locale.of("en");
+        return today.getMonth().getDisplayName(TextStyle.SHORT, locale);
+    }
+
+    public String getFullDay(String day, Locale locale) {
+        Integer dayNumber = getDayNumber(day);
+        String nameDayOfWeek = localizationService.getMessage(day, locale);
+        String currentMonth = getCurrentMonth();
+        String nameOfMonth = localizationService.getMessage(currentMonth.toLowerCase(), locale);
+        return nameDayOfWeek + ": " + " " + dayNumber + " " + nameOfMonth;
+    }
+
+    public Integer getDayNumber(String day) {
+        return getCurrentWeekDays().get(day);
+    }
+
 }

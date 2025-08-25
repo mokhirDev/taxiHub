@@ -43,7 +43,7 @@ public class BotPageService {
     public PageDto getNextPage(UserState userState, Update update) {
         PageDto currentPage = getCurrentPage(userState.getCurrentPageCode());
         Set<String> nextPageCodes = currentPage.getNextPage();
-        AnswerTypeEnum answerType = getAnswerType(update);
+        AnswerTypeEnum answerType = getAnswerType(currentPage, update);
         if (answerType == null) {
             return currentPage;
         }
@@ -54,7 +54,7 @@ public class BotPageService {
                 .filter(pageDto -> pageDto.getAnswerType().contains(answerType))
                 .filter(pageDto -> {
                     if (answerType.equals(AnswerTypeEnum.CallBack)) {
-                        return pageDto.getCallBackCondition().contains(update.getCallbackQuery().getData());
+                        return pageDto.getCallBackCondition().contains("*") || pageDto.getCallBackCondition().contains(update.getCallbackQuery().getData());
                     }
                     return true;
                 })
@@ -62,7 +62,7 @@ public class BotPageService {
         return nextPage.orElse(currentPage);
     }
 
-    private AnswerTypeEnum getAnswerType(Update update) {
+    private AnswerTypeEnum getAnswerType(PageDto currentPage, Update update) {
         if (update.hasCallbackQuery()) {
             return AnswerTypeEnum.CallBack;
         } else if (update.hasMessage() && update.getMessage().hasText()) {

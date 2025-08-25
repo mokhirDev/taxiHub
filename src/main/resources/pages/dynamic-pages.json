@@ -14,9 +14,12 @@
     "message": [
       "choose.language"
     ],
-    "callBackCondition": ["back"],
+    "callBackCondition": [
+      "back"
+    ],
     "answerType": [
-      "Text","CallBack"
+      "Text",
+      "CallBack"
     ],
     "nextPage": [
       "role"
@@ -282,13 +285,79 @@
     "message": [
       "departure.date"
     ],
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "textCode": "mon",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "tue",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "wed",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "thu",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "fri",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "sat",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ],
+      [
+        {
+          "textCode": "sun",
+          "callBack": "day",
+          "buttonType": "Date",
+          "contact": false,
+          "location": false
+        }
+      ]
+    ]
   },
   {
     "pageCode": "order_seats",
-    "callBackCondition": [],
+    "callBackCondition": [
+      "*"
+    ],
     "answerType": [
-      "Text"
+      "CallBack"
     ],
     "nextPage": [
       "add_comment"
@@ -300,24 +369,27 @@
       [
         {
           "textCode": "btn.seats.minus",
-          "callBack": "seat_minus",
+          "callBack": "minus",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "expression": true
         },
         {
           "textCode": "btn.current.seats",
-          "callBack": "order_seats",
+          "callBack": "seats_count",
           "buttonType": "InlineKeyboardMarkup",
+          "variable": true,
           "contact": false,
           "location": false
         },
         {
           "textCode": "btn.seats.plus",
-          "callBack": "seat_plus",
+          "callBack": "plus",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "expression": true
         }
       ],
       [

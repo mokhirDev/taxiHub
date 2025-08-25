@@ -8,6 +8,7 @@ import java.util.Set;
 public enum AnswerTypeEnum {
     Text,
     CallBack,
+    Date,
     Contact;
 
     public static boolean answerTypeExist(AnswerTypeEnum answerType) {

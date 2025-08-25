@@ -1,0 +1,16 @@
+{
+  "variable": [
+    {
+      "name": "seats_count",
+      "value": 1
+    }
+  ],
+  "expression": [
+    {
+      "plus":"+1"
+    },
+    {
+      "minus":"-1"
+    }
+  ]
+}

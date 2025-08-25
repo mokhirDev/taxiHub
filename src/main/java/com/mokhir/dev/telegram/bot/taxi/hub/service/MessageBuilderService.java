@@ -34,11 +34,14 @@ public class MessageBuilderService {
 
         InlineKeyboardMarkup inlineKeyboard = buttonService.buildInlineKeyboard(page.getButtons(), locale);
         ReplyKeyboardMarkup replyKeyboard = buttonService.buildReplyKeyboard(page.getButtons(), locale);
+        InlineKeyboardMarkup dateInlineKeyboard = buttonService.buildDateInlineKeyboard(page.getButtons(), locale);
 
         if (inlineKeyboard != null && !inlineKeyboard.getKeyboard().isEmpty()) {
             builder.replyMarkup(inlineKeyboard);
         } else if (replyKeyboard != null && !replyKeyboard.getKeyboard().isEmpty()) {
             builder.replyMarkup(replyKeyboard);
+        }else if (dateInlineKeyboard != null && !dateInlineKeyboard.getKeyboard().isEmpty()) {
+            builder.replyMarkup(dateInlineKeyboard);
         }
 
         return builder.build();
