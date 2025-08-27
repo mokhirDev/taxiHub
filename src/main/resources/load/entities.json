@@ -1,0 +1,51 @@
+{
+  "tables": [
+    {
+      "tableName": "user_state",
+      "columns": [
+        { "name": "id", "type": "BIGINT", "primaryKey": true, "autoIncrement": true },
+        { "name": "user_id", "type": "BIGINT" },
+        { "name": "user_name", "type": "VARCHAR(255)" },
+        { "name": "locale", "type": "VARCHAR(50)" },
+        { "name": "role", "type": "ENUM('CLIENT','DRIVER')" },
+        { "name": "has_phone", "type": "BOOLEAN" },
+        { "name": "has_from_location", "type": "BOOLEAN" },
+        { "name": "has_to_location", "type": "BOOLEAN" },
+        { "name": "has_date", "type": "BOOLEAN" },
+        { "name": "has_seats", "type": "BOOLEAN" },
+        { "name": "order_complete", "type": "BOOLEAN" },
+        { "name": "current_page_code", "type": "VARCHAR(100)" },
+        { "name": "last_message_id", "type": "INT" }
+      ],
+      "relations": [
+        {
+          "type": "OneToMany",
+          "target": "orders",
+          "mappedBy": "userState"
+        }
+      ]
+    },
+    {
+      "tableName": "orders",
+      "columns": [
+        { "name": "id", "type": "BIGINT", "primaryKey": true, "autoIncrement": true },
+        { "name": "chat_id", "type": "BIGINT" },
+        { "name": "contact_number", "type": "VARCHAR(50)" },
+        { "name": "leaving_date", "type": "VARCHAR(50)" },
+        { "name": "from_city", "type": "VARCHAR(100)" },
+        { "name": "to_city", "type": "VARCHAR(100)" },
+        { "name": "passengers_count", "type": "INT" },
+        { "name": "latitude", "type": "INT" },
+        { "name": "longitude", "type": "INT" },
+        { "name": "client_id", "type": "BIGINT", "foreignKey": "user_state.id" }
+      ],
+      "relations": [
+        {
+          "type": "ManyToOne",
+          "target": "user_state",
+          "joinColumn": "client_id"
+        }
+      ]
+    }
+  ]
+}

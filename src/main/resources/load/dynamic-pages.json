@@ -1,9 +1,12 @@
 [
   {
     "pageCode": "start",
+    "query": "",
     "message": [],
     "callBackCondition": [],
-    "answerType": [],
+    "answerType": [
+      "Text"
+    ],
     "nextPage": [
       "lang"
     ],
@@ -11,6 +14,7 @@
   },
   {
     "pageCode": "lang",
+    "query": "saveLangToUser",
     "message": [
       "choose.language"
     ],
@@ -18,7 +22,6 @@
       "back"
     ],
     "answerType": [
-      "Text",
       "CallBack"
     ],
     "nextPage": [
@@ -31,27 +34,34 @@
           "callBack": "uz",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         },
         {
           "textCode": "ru.flag",
           "callBack": "ru",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         },
         {
           "textCode": "en.flag",
           "callBack": "en",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "role",
+    "query": "",
     "message": [
       "choose.option"
     ],
@@ -76,14 +86,18 @@
           "callBack": "driver_menu",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         },
         {
           "textCode": "btn.passenger",
           "callBack": "passenger_menu",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
@@ -92,13 +106,16 @@
           "callBack": "back",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "driver_menu",
+    "query": "",
     "message": [
       "driver.menu"
     ],
@@ -118,7 +135,9 @@
           "callBack": "join_to_group",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
@@ -127,13 +146,16 @@
           "callBack": "back",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "passenger_menu",
+    "query": "",
     "message": [
       "passenger.menu"
     ],
@@ -156,7 +178,9 @@
           "callBack": "create_order",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
@@ -165,7 +189,9 @@
           "callBack": "my_orders",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
@@ -174,18 +200,21 @@
           "callBack": "back",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "phone_number",
+    "query": "",
     "callBackCondition": [
       "create_order"
     ],
     "answerType": [
-      "CallBack"
+      "Contact"
     ],
     "nextPage": [
       "order_from"
@@ -199,17 +228,19 @@
           "textCode": "btn.share.contact",
           "buttonType": "ReplyKeyboardMarkup",
           "contact": true,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "order_from",
+    "query": "",
     "callBackCondition": [],
     "answerType": [
-      "Text",
-      "Contact"
+      "CallBack"
     ],
     "nextPage": [
       "order_to"
@@ -224,20 +255,25 @@
           "callBack": "kokand",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         },
         {
           "textCode": "btn.city.tashkent",
           "callBack": "tashkent",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "order_to",
+    "query": "",
     "callBackCondition": [
       "kokand",
       "tashkent"
@@ -258,20 +294,25 @@
           "callBack": "kokand",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         },
         {
           "textCode": "btn.city.tashkent",
           "callBack": "tashkent",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "order_date",
+    "query": "",
     "callBackCondition": [
       "kokand",
       "tashkent"
@@ -288,71 +329,86 @@
     "buttons": [
       [
         {
-          "textCode": "mon",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+0",
+          "callBack": "{d.dd}+0",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "tue",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+1",
+          "callBack": "{d.dd}+1",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "wed",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+2",
+          "callBack": "{d.dd}+2",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "thu",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+3",
+          "callBack": "{d.dd}+3",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "fri",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+4",
+          "callBack": "{d.dd}+4",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "sat",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+5",
+          "callBack": "{d.dd}+5",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
         {
-          "textCode": "sun",
-          "callBack": "day",
+          "textCode": "{EEEE, d MMMM}+6",
+          "callBack": "{d.dd}+6",
           "buttonType": "Date",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "order_seats",
+    "query": "",
     "callBackCondition": [
       "*"
     ],
@@ -370,26 +426,29 @@
         {
           "textCode": "btn.seats.minus",
           "callBack": "minus",
-          "buttonType": "InlineKeyboardMarkup",
+          "buttonType": "Expression",
           "contact": false,
           "location": false,
-          "expression": true
+          "isVariable": false,
+          "isExpression": true
         },
         {
           "textCode": "btn.current.seats",
           "callBack": "seats_count",
-          "buttonType": "InlineKeyboardMarkup",
-          "variable": true,
+          "buttonType": "Variable",
+          "isVariable": true,
           "contact": false,
-          "location": false
+          "location": false,
+          "isExpression": false
         },
         {
           "textCode": "btn.seats.plus",
           "callBack": "plus",
-          "buttonType": "InlineKeyboardMarkup",
+          "buttonType": "Expression",
           "contact": false,
           "location": false,
-          "expression": true
+          "isVariable": false,
+          "isExpression": true
         }
       ],
       [
@@ -398,18 +457,22 @@
           "callBack": "save",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "add_comment",
+    "query": "",
     "callBackCondition": [
       "save"
     ],
     "answerType": [
-      "CallBack"
+      "CallBack",
+      "Text"
     ],
     "nextPage": [
       "check_order"
@@ -424,18 +487,20 @@
           "callBack": "skip_comment",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "check_order",
+    "query": "",
     "callBackCondition": [
       "skip_comment"
     ],
     "answerType": [
-      "Text",
       "CallBack"
     ],
     "nextPage": [
@@ -453,7 +518,9 @@
           "callBack": "finish_order",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ],
       [
@@ -462,13 +529,16 @@
           "callBack": "cancel_order",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]
   },
   {
     "pageCode": "confirm_order",
+    "query": "",
     "callBackCondition": [
       "finish_order"
     ],
@@ -488,7 +558,9 @@
           "callBack": "main.menu",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
-          "location": false
+          "location": false,
+          "isVariable": false,
+          "isExpression": false
         }
       ]
     ]

@@ -1,6 +1,12 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.ButtonDto;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.VariableDto;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.Variable;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.ButtonTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,9 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.*;
 
 
@@ -20,7 +23,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ButtonService {
 
+    private static final Pattern PATTERN = Pattern.compile("\\{([^}]+)\\}([+-]\\d+)");
+
     private final LocalizationService localizationService;
+    private final VariableService variableService;
+    private final BotPageService botPageService;
 
     /**
      * Построить ReplyKeyboardMarkup (обычные кнопки).
@@ -47,21 +54,23 @@ public class ButtonService {
         ReplyKeyboardMarkup replyKeyboard = new ReplyKeyboardMarkup();
         replyKeyboard.setKeyboard(keyboardRows);
         replyKeyboard.setResizeKeyboard(true);
-        replyKeyboard.setOneTimeKeyboard(true);
+        replyKeyboard.setOneTimeKeyboard(false);
+        replyKeyboard.setSelective(true);
         return replyKeyboard;
     }
 
     /**
      * Построить InlineKeyboardMarkup (inline-кнопки).
      */
-    public InlineKeyboardMarkup buildInlineKeyboard(List<List<ButtonDto>> buttons, Locale locale) {
+    public InlineKeyboardMarkup buildInlineKeyboard(UserState userState, List<List<ButtonDto>> buttons, Locale locale) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-
         for (List<ButtonDto> row : buttons) {
             List<InlineKeyboardButton> inlineRow = new ArrayList<>();
             for (ButtonDto btn : row) {
-                if (btn.getButtonType() == ButtonTypeEnum.InlineKeyboardMarkup) {
+                if (btn.getButtonType() == ButtonTypeEnum.InlineKeyboardMarkup || btn.getButtonType() == ButtonTypeEnum.Expression) {
                     inlineRow.add(toInlineButton(btn, locale));
+                } else if (btn.getButtonType() == ButtonTypeEnum.Variable) {
+                    inlineRow.add(toVariableInlineButton(userState, btn));
                 }
             }
             if (!inlineRow.isEmpty()) {
@@ -104,62 +113,38 @@ public class ButtonService {
 
     private InlineKeyboardButton toInlineButton(ButtonDto dto, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(localizationService.getMessage(dto.getTextCode(), locale));
+
         if (dto.getUrl() != null) {
             button.setUrl(dto.getUrl());
         } else if (dto.getCallBack() != null) {
             button.setCallbackData(dto.getCallBack());
         }
+        button.setText(localizationService.getMessage(dto.getTextCode(), locale));
+        return button;
+    }
+
+
+    private InlineKeyboardButton toVariableInlineButton(UserState user, ButtonDto dto) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        VariableDto variableDto = botPageService.getVariableDto(dto.getCallBack());
+        Variable variable = variableService.getOrCreateVariable(user, variableDto);
+        button.setText(variable.getVariableValue().toString());
+        button.setCallbackData(variable.getVariableName());
         return button;
     }
 
     private InlineKeyboardButton toInlineDateButton(ButtonDto dto, Locale locale) {
+        locale = locale.getLanguage().equals("uz") ? new Locale.Builder().setLanguage("uz").setScript("Cyrl").build() : locale;
+
         InlineKeyboardButton button = new InlineKeyboardButton();
-        String textCode = dto.getTextCode();
-        Integer dayNumber = getDayNumber(textCode);
-        button.setText(getFullDay(textCode, locale));
-        button.setCallbackData(dayNumber.toString());
+        String textCodeFormat = DateShiftFormatter.textCodeFormat(dto.getTextCode(), locale);
+        String callBackFormat = DateShiftFormatter.callBackFormat(dto.getCallBack(), locale);
+        button.setText(DateShiftFormatter.capitalizeWords(textCodeFormat));
+        button.setCallbackData(DateShiftFormatter.capitalizeWords(callBackFormat));
         if (dto.getUrl() != null) {
             button.setUrl(dto.getUrl());
         }
         return button;
-    }
-
-    public static Map<String, Integer> getCurrentWeekDays() {
-        Map<String, Integer> daysMap = new LinkedHashMap<>();
-        Locale locale = Locale.of("en");
-        LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(DayOfWeek.MONDAY);
-
-        for (int i = 0; i < 7; i++) {
-            LocalDate day = monday.plusDays(i);
-
-            String dayShort = day.getDayOfWeek()
-                    .getDisplayName(TextStyle.SHORT, locale)
-                    .toLowerCase(locale);
-
-            daysMap.put(dayShort, day.getDayOfMonth());
-        }
-
-        return daysMap;
-    }
-
-    public static String getCurrentMonth() {
-        LocalDate today = LocalDate.now();
-        Locale locale = Locale.of("en");
-        return today.getMonth().getDisplayName(TextStyle.SHORT, locale);
-    }
-
-    public String getFullDay(String day, Locale locale) {
-        Integer dayNumber = getDayNumber(day);
-        String nameDayOfWeek = localizationService.getMessage(day, locale);
-        String currentMonth = getCurrentMonth();
-        String nameOfMonth = localizationService.getMessage(currentMonth.toLowerCase(), locale);
-        return nameDayOfWeek + ": " + " " + dayNumber + " " + nameOfMonth;
-    }
-
-    public Integer getDayNumber(String day) {
-        return getCurrentWeekDays().get(day);
     }
 
 }

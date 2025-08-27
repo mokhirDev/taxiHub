@@ -1,0 +1,22 @@
+{
+  "variableDto": [
+    {
+      "name": "seats_count",
+      "value": 1,
+      "max": 4,
+      "min": 1
+    }
+  ],
+  "expressionDto": [
+    {
+      "name": "plus",
+      "action": "+1",
+      "variableName": "seats_count"
+    },
+    {
+      "name": "minus",
+      "action": "-1",
+      "variableName": "seats_count"
+    }
+  ]
+}

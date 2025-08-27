@@ -1,0 +1,27 @@
+[
+  {
+    "name": "saveLangToUser",
+    "sql": "UPDATE user_state SET locale = :locale WHERE user_id = :userId",
+    "params": {
+      "locale": "{update.callback.data}",
+      "userId": "{update.callback.message.chat.id}"
+    }
+  },
+  {
+    "name": "savePhoneToUser",
+    "sql": "UPDATE user_state SET has_phone = true WHERE user_id = :userId",
+    "params": {
+      "userId": "{update.message.chat.id}"
+    }
+  },
+  {
+    "name": "addOrder",
+    "sql": "INSERT INTO orders (chat_id, from_city, to_city, passengers_count) VALUES (:chatId, :fromCity, :toCity, :passengers)",
+    "params": {
+      "chatId": "{update.message.chat.id}",
+      "fromCity": "{update.message.text.fromCity}",
+      "toCity": "{update.message.text.toCity}",
+      "passengers": "{update.message.text.passengersCount}"
+    }
+  }
+]

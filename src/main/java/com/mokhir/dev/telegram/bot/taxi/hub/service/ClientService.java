@@ -24,7 +24,7 @@ public class ClientService {
         if (byId.isPresent()) {
             userState = byId.get();
             if (update.hasCallbackQuery()) {
-                userState.setLastMessageId(messageService.getLastMessageId(update));
+                messageService.updateLastMessageId(update, userState);
             }
         } else {
             userState = UserState
@@ -32,9 +32,8 @@ public class ClientService {
                     .userId(userId)
                     .currentPageCode("start")
                     .userName(userName)
-                    .locale("uz")
                     .orders(new ArrayList<>())
-                    .lastMessageId(messageService.getLastMessageId(update))
+                    .lastMessageId(messageService.setLastMessageId(update))
                     .build();
         }
         userStateRepository.save(userState);
@@ -63,6 +62,7 @@ public class ClientService {
     public void resetUserStatus(UserState user) {
         user.setCurrentPageCode("start");
         user.setLastMessageId(0);
+        user.setLocale(null);
         save(user);
     }
 }

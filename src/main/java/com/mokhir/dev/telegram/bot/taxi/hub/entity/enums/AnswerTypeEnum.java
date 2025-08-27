@@ -8,16 +8,8 @@ import java.util.Set;
 public enum AnswerTypeEnum {
     Text,
     CallBack,
+    CallBackOfExpression,
+    CallBackOfVariable,
     Date,
     Contact;
-
-    public static boolean answerTypeExist(AnswerTypeEnum answerType) {
-        AnswerTypeEnum[] values = values();
-        for (AnswerTypeEnum value : values) {
-            if (answerType.equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

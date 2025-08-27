@@ -2,9 +2,11 @@ package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
 import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
-import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.ButtonTypeEnum;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.AnswerTypeEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,17 +16,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
-import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
 public class TaxiHubService extends TelegramLongPollingCommandBot {
+    private final QueryLoadService queryLoadService;
+    private final DynamicSqlExecutor executor;
     private static final Logger log = LoggerFactory.getLogger(TaxiHubService.class);
 
     private final BotConfig botConfig;
-    private final BotNavigationService navigationService;
     private final ClientService clientService;
     private final MessageBuilderService messageBuilder;
     private final BotPageService botPageService;
@@ -34,28 +35,48 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
     public void processNonCommandUpdate(Update update) {
         UserState user = clientService.getOrCreate(update);
         checkRestart(update, user);
-        PageDto nextPage = navigationService.getNextPage(user, update);
-        PageDto currentPage = botPageService.getCurrentPage(user.getCurrentPageCode());
-        handleRemoveButtons(update, currentPage);
-        sendMessage(user, nextPage);
+        if (!isExpiredCallBack(update, user)) {
+            PageDto currentPage = botPageService.getCurrentPage(user.getCurrentPageCode());
+            handleUpdate(update, currentPage.getQuery());
+            user = clientService.getOrCreate(update);
+            PageDto nextPage = botPageService.getNextPage(user, update);
+            sendMessage(user, nextPage, update);
+            clientService.setCurrentPage(user, nextPage.getPageCode());
+        }
 
-        clientService.setCurrentPage(user, nextPage.getPageCode());
     }
 
-    private void sendMessage(UserState user, PageDto nextPage) {
+    private void sendMessage(UserState user, PageDto nextPage, Update update) {
         try {
-            if (notExistLastMessage(user)) {
+            if (notExistLastMessage(user, update)) {
                 sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
             } else {
-                deleteMessage(messageBuilder.deleteMessage(user));
-                sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
+                if (botPageService.getAnswerType(update).equals(AnswerTypeEnum.CallBackOfExpression)) {
+                    editMessage(
+                            messageBuilder
+                                    .calculateExpression(
+                                            user,
+                                            update,
+                                            nextPage
+                                    )
+                    );
+                } else if (botPageService.getAnswerType(update).equals(AnswerTypeEnum.CallBack) &&
+                        nextPage.getAnswerType().contains(AnswerTypeEnum.CallBack)) {
+                    editMessage(messageBuilder.editMessage(user, nextPage));
+                } else if (botPageService.getAnswerType(update).equals(AnswerTypeEnum.CallBackOfVariable)) {
+                    return;
+                } else {
+                    deleteMessage(messageBuilder.deleteMessage(user));
+                    sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
+                }
             }
         } catch (RuntimeException e) {
+            deleteMessage(messageBuilder.deleteMessage(user));
             sendNewMessage(messageBuilder.createNewMessage(user, nextPage), user);
         }
     }
 
-    private Boolean notExistLastMessage(UserState user) {
+    private Boolean notExistLastMessage(UserState user, Update update) {
         return user.getLastMessageId() == 0;
     }
 
@@ -63,25 +84,6 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
         if (update.hasMessage() && "/start".equals(update.getMessage().getText())) {
             clientService.resetUserStatus(user);
         }
-    }
-
-    private void handleRemoveButtons(Update update, PageDto currentPage) {
-        if (update.hasMessage()) {
-            if (update.getMessage().hasContact()) {
-                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Контакт получен ✅");
-            } else if (update.getMessage().hasLocation()) {
-                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Локация получена ✅");
-            } else if (hasReplyButton(currentPage)) {
-                removeKeyboard(update.getMessage().getChatId(), "Спасибо! Контакт получен ✅");
-            }
-        }
-    }
-
-    private boolean hasReplyButton(PageDto currentPage) {
-        return currentPage.getButtons() != null &&
-                currentPage.getButtons().stream()
-                        .flatMap(Collection::stream)
-                        .anyMatch(e -> e.getButtonType().equals(ButtonTypeEnum.ReplyKeyboardMarkup));
     }
 
     @Override
@@ -107,6 +109,7 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
 
     public void editMessage(EditMessageText message) {
         try {
+            if (message == null) return;
             execute(message);
         } catch (Exception e) {
             log.error("Ошибка при редактировании сообщения {}: {}", message.getChatId(), e.getMessage(), e);
@@ -123,18 +126,20 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
         }
     }
 
-    public void deleteReplyButton(SendMessage message) {
-        try {
-            execute(message);
-        } catch (Exception e) {
-            log.error("Ошибка при удалении сообщения {}: {}", message.getChatId(), e.getMessage(), e);
-            throw new RuntimeException("Не удалось удалить сообщение", e);
+    private boolean isExpiredCallBack(Update update, UserState userState) {
+        if (update.hasCallbackQuery()) {
+            Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
+            return userState.getLastMessageId() > messageId;
+        }
+        return false;
+    }
+
+    @SneakyThrows
+    public void handleUpdate(Update update, String queryName) {
+        QueryConfig queryConfig = queryLoadService.getQueryByName(queryName);
+        if (queryConfig != null) {
+            executor.executeQuery(queryConfig, update);
         }
     }
 
-    public void removeKeyboard(Long chatId, String text) {
-        SendMessage message = new SendMessage(chatId.toString(), text);
-        message.setReplyMarkup(new ReplyKeyboardRemove(true));
-        deleteReplyButton(message);
-    }
 }
