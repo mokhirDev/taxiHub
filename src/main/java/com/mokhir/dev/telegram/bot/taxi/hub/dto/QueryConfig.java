@@ -9,4 +9,5 @@ public class QueryConfig {
     private String name;
     private String sql;
     private Map<String, String> params;
+    private AnswerDto answer;
 }

@@ -14,12 +14,6 @@
             <column name="locale" type="VARCHAR(50)"/>
             <column name="role" type="VARCHAR(50)"/>
             <column name="last_message_id" type="VARCHAR(255)"/>
-            <column name="has_phone" type="BOOLEAN"/>
-            <column name="has_from_location" type="BOOLEAN"/>
-            <column name="has_to_location" type="BOOLEAN"/>
-            <column name="has_date" type="BOOLEAN"/>
-            <column name="has_seats" type="BOOLEAN"/>
-            <column name="order_complete" type="BOOLEAN"/>
             <column name="current_page_code" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>

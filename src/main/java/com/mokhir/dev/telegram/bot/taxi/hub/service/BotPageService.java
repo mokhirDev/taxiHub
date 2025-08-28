@@ -112,4 +112,17 @@ public class BotPageService {
                 .findFirst()
                 .get();
     }
+
+    public String getUpdateText(Update update) {
+        AnswerTypeEnum answerType = getAnswerType(update);
+        if (answerType == null) {
+            return null;
+        }
+        return switch (answerType) {
+            case CallBack -> update.getCallbackQuery().getData();
+            case Text -> update.getMessage().getText();
+            case Contact -> update.getMessage().getContact().toString();
+            default -> null;
+        };
+    }
 }

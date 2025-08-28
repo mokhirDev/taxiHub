@@ -1,6 +1,8 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.ClientTypeEnum;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.LocaleEnum;
 import com.mokhir.dev.telegram.bot.taxi.hub.repository.UserStateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,8 @@ public class ClientService {
                     .userId(userId)
                     .currentPageCode("start")
                     .userName(userName)
-                    .orders(new ArrayList<>())
+                    .role(ClientTypeEnum.GUEST)
+                    .locale(LocaleEnum.UNKNOWN)
                     .lastMessageId(messageService.setLastMessageId(update))
                     .build();
         }
@@ -62,7 +65,8 @@ public class ClientService {
     public void resetUserStatus(UserState user) {
         user.setCurrentPageCode("start");
         user.setLastMessageId(0);
-        user.setLocale(null);
+        user.setLocale(LocaleEnum.UNKNOWN);
+        user.setRole(ClientTypeEnum.GUEST);
         save(user);
     }
 }

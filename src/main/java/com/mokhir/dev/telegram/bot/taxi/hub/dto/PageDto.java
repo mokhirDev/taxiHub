@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class PageDto {
     private String pageCode;
-    private String query;
+    private List<String> query;
     private Set<String> nextPage;
     private Set<String> callBackCondition;
     private Set<AnswerTypeEnum> answerType;

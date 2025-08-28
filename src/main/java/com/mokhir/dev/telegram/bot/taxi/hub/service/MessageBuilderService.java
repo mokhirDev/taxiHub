@@ -6,6 +6,7 @@ import com.mokhir.dev.telegram.bot.taxi.hub.dto.VariableDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.CallBackVariablesDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.Variable;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.LocaleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,8 @@ public class MessageBuilderService {
 
     public SendMessage createNewMessage(UserState user, PageDto page) {
         Long chatId = user.getUserId();
-        String text = generateLocaleText(user.getLocale(), page);
-        Locale locale = getDefaultLang(user.getLocale());
+        String text = generateLocaleText(user.getLocale().toString(), page);
+        Locale locale = getDefaultLang(user.getLocale().toString());
         SendMessage.SendMessageBuilder builder = SendMessage.builder()
                 .chatId(chatId.toString())
                 .text(text);
@@ -54,7 +55,7 @@ public class MessageBuilderService {
 
 
     public EditMessageText editMessage(UserState userState, PageDto nextPage) {
-        Locale locale = Locale.of(userState.getLocale());
+        Locale locale = Locale.of(userState.getLocale().toString());
 
         String text = nextPage.getMessage().stream()
                 .map(m -> localizationService.getMessage(m, locale))
@@ -108,7 +109,7 @@ public class MessageBuilderService {
 
     public EditMessageText calculateExpression(UserState userState, Update update, PageDto nextPage) {
         CallBackVariablesDto callBackVariablesDto = botPageService.getCallBackVariablesDto();
-        Locale locale = Locale.of(userState.getLocale());
+        Locale locale = Locale.of(userState.getLocale().toString());
         String text = nextPage.getMessage().stream()
                 .map(m -> localizationService.getMessage(m, locale))
                 .collect(Collectors.joining("\n"));
@@ -164,7 +165,7 @@ public class MessageBuilderService {
     }
 
     public String generateLocaleText(String localeText, PageDto page) {
-        if (localeText == null || localeText.isEmpty()) {
+        if (localeText.equals(LocaleEnum.UNKNOWN.toString()) || localeText.isEmpty()) {
             Locale localeUz = Locale.of("uz");
             Locale localeEn = Locale.of("en");
             Locale localeRu = Locale.of("ru");
@@ -186,7 +187,7 @@ public class MessageBuilderService {
     }
 
     private Locale getDefaultLang(String locale) {
-        if (locale == null || locale.isEmpty()) {
+        if (locale == null || locale.isEmpty() || locale.equals(LocaleEnum.UNKNOWN.toString())) {
             return Locale.of("en");
         }
         return Locale.of(locale);

@@ -1,7 +1,7 @@
 [
   {
     "pageCode": "start",
-    "query": "",
+    "query": [],
     "message": [],
     "callBackCondition": [],
     "answerType": [
@@ -14,7 +14,7 @@
   },
   {
     "pageCode": "lang",
-    "query": "saveLangToUser",
+    "query": ["saveLangToUser"],
     "message": [
       "choose.language"
     ],
@@ -31,7 +31,7 @@
       [
         {
           "textCode": "uz.flag",
-          "callBack": "uz",
+          "callBack": "UZ",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
           "location": false,
@@ -40,7 +40,7 @@
         },
         {
           "textCode": "ru.flag",
-          "callBack": "ru",
+          "callBack": "RU",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
           "location": false,
@@ -49,7 +49,7 @@
         },
         {
           "textCode": "en.flag",
-          "callBack": "en",
+          "callBack": "EN",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
           "location": false,
@@ -61,29 +61,29 @@
   },
   {
     "pageCode": "role",
-    "query": "",
+    "query": ["saveRoleToUser"],
     "message": [
       "choose.option"
     ],
     "callBackCondition": [
-      "uz",
-      "ru",
-      "en",
+      "UZ",
+      "RU",
+      "EN",
       "back"
     ],
     "answerType": [
       "CallBack"
     ],
     "nextPage": [
-      "driver_menu",
-      "passenger_menu",
+      "driver",
+      "passenger",
       "lang"
     ],
     "buttons": [
       [
         {
           "textCode": "btn.driver",
-          "callBack": "driver_menu",
+          "callBack": "DRIVER",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
           "location": false,
@@ -92,7 +92,7 @@
         },
         {
           "textCode": "btn.passenger",
-          "callBack": "passenger_menu",
+          "callBack": "PASSENGER",
           "buttonType": "InlineKeyboardMarkup",
           "contact": false,
           "location": false,
@@ -114,13 +114,13 @@
     ]
   },
   {
-    "pageCode": "driver_menu",
-    "query": "",
+    "pageCode": "driver",
+    "query": [],
     "message": [
       "driver.menu"
     ],
     "callBackCondition": [
-      "driver_menu"
+      "DRIVER"
     ],
     "answerType": [
       "CallBack"
@@ -154,13 +154,13 @@
     ]
   },
   {
-    "pageCode": "passenger_menu",
-    "query": "",
+    "pageCode": "passenger",
+    "query": [],
     "message": [
       "passenger.menu"
     ],
     "callBackCondition": [
-      "passenger_menu",
+      "PASSENGER",
       "main.menu",
       "cancel_order"
     ],
@@ -209,7 +209,7 @@
   },
   {
     "pageCode": "phone_number",
-    "query": "",
+    "query": ["createOrder"],
     "callBackCondition": [
       "create_order"
     ],
@@ -237,7 +237,7 @@
   },
   {
     "pageCode": "order_from",
-    "query": "",
+    "query": ["saveFromCity"],
     "callBackCondition": [],
     "answerType": [
       "CallBack"
@@ -273,7 +273,7 @@
   },
   {
     "pageCode": "order_to",
-    "query": "",
+    "query": ["saveToCity"],
     "callBackCondition": [
       "kokand",
       "tashkent"
@@ -312,7 +312,7 @@
   },
   {
     "pageCode": "order_date",
-    "query": "",
+    "query": ["saveLeavingDate"],
     "callBackCondition": [
       "kokand",
       "tashkent"
@@ -408,7 +408,7 @@
   },
   {
     "pageCode": "order_seats",
-    "query": "",
+    "query": ["saveSeatsCount"],
     "callBackCondition": [
       "*"
     ],
@@ -454,8 +454,8 @@
       [
         {
           "textCode": "btn.save",
-          "callBack": "save",
-          "buttonType": "InlineKeyboardMarkup",
+          "callBack": "seats_count",
+          "buttonType": "Variable",
           "contact": false,
           "location": false,
           "isVariable": false,
@@ -466,7 +466,7 @@
   },
   {
     "pageCode": "add_comment",
-    "query": "",
+    "query": ["saveComment"],
     "callBackCondition": [
       "save"
     ],
@@ -496,7 +496,7 @@
   },
   {
     "pageCode": "check_order",
-    "query": "",
+    "query": ["confirmOrder", "cancelOrder"],
     "callBackCondition": [
       "skip_comment"
     ],
@@ -505,7 +505,7 @@
     ],
     "nextPage": [
       "confirm_order",
-      "passenger_menu"
+      "passenger"
     ],
     "message": [
       "check.order",
@@ -538,7 +538,7 @@
   },
   {
     "pageCode": "confirm_order",
-    "query": "",
+    "query": [],
     "callBackCondition": [
       "finish_order"
     ],
@@ -546,7 +546,7 @@
       "CallBack"
     ],
     "nextPage": [
-      "passenger_menu"
+      "passenger"
     ],
     "message": [
       "confirm.order"

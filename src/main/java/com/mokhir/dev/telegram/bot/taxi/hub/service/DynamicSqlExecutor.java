@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,11 +65,20 @@ public class DynamicSqlExecutor {
                     if (current instanceof Message m) yield m.getText();
                     else yield null;
                 }
+                case "contact" -> {
+                    if (current instanceof Message m) yield m.getContact();
+                    else yield null;
+                }
+                case "phoneNumber" -> {
+                    if (current instanceof Contact c) yield c.getPhoneNumber();
+                    else yield null;
+                }
                 default -> {
                     // для динамических полей в тексте сообщения (например fromCity: "fromCity:Ташкент")
                     if (current instanceof String text) {
                         Map<String, String> map = Arrays.stream(text.split(","))
                                 .map(s -> s.split(":"))
+                                .filter(a -> a.length == 2)
                                 .collect(Collectors.toMap(a -> a[0], a -> a[1]));
                         yield map.get(part);
                     }

@@ -1,6 +1,7 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
 import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.AnswerDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
@@ -16,6 +17,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
+
+import java.util.List;
 
 
 @Component
@@ -37,7 +40,7 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
         checkRestart(update, user);
         if (!isExpiredCallBack(update, user)) {
             PageDto currentPage = botPageService.getCurrentPage(user.getCurrentPageCode());
-            handleUpdate(update, currentPage.getQuery());
+            handleUpdate(update, currentPage);
             user = clientService.getOrCreate(update);
             PageDto nextPage = botPageService.getNextPage(user, update);
             sendMessage(user, nextPage, update);
@@ -135,11 +138,27 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
     }
 
     @SneakyThrows
-    public void handleUpdate(Update update, String queryName) {
-        QueryConfig queryConfig = queryLoadService.getQueryByName(queryName);
-        if (queryConfig != null) {
-            executor.executeQuery(queryConfig, update);
-        }
+    public void handleUpdate(Update update, PageDto currentPage) {
+        AnswerTypeEnum answerType = botPageService.getAnswerType(update);
+        currentPage.getQuery().forEach(query -> {
+            QueryConfig queryConfig = queryLoadService.getQueryByName(query);
+            if (queryConfig != null && (queryConfig.getAnswer().getType() != null || queryConfig.getAnswer().getExpectedAnswers()!=null)) {
+                AnswerDto answer = queryConfig.getAnswer();
+                assert answer.getType() != null;
+                boolean isValidAnswer = answer.getType().equals(answerType.toString()) || answer.getExpectedAnswers().contains(botPageService.getUpdateText(update));
+                if (isValidAnswer) {
+                    executor.executeQuery(queryConfig, update);
+                }
+            } else {
+                assert queryConfig != null;
+                executor.executeQuery(queryConfig, update);
+            }
+        });
+    }
+
+    public Boolean existAnswerConfig(QueryConfig queryConfig) {
+        AnswerDto answer = queryConfig.getAnswer();
+        return answer != null && answer.getType() != null && !answer.getExpectedAnswers().isEmpty();
     }
 
 }

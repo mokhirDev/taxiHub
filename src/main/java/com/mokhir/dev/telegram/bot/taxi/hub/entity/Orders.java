@@ -17,6 +17,8 @@ public class Orders {
     private Long id;
     @Column(name = "chat_id")
     private Long chatId;
+    @Column(name = "current_page_code")
+    private String currentPageCode;
     @Column(name = "contact_number")
     private String contactNumber;
     @Column(name = "leaving_date")
@@ -31,7 +33,4 @@ public class Orders {
     private Integer latitude;
     @Column(name = "longitude")
     private Integer longitude;
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private UserState userState;
 }
