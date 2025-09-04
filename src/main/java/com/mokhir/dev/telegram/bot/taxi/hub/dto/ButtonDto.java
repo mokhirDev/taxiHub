@@ -17,9 +17,5 @@ public class ButtonDto {
     private String textCode;
     private String callBack;
     private ButtonTypeEnum buttonType;
-    private Boolean isExpression;
-    private Boolean isVariable;
-    private Boolean contact;
-    private Boolean location;
     private String url;
 }

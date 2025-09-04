@@ -1,13 +1,10 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
-import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.AnswerDto;
 import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfig;
+import com.mokhir.dev.telegram.bot.taxi.hub.config.BotConfig;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.AnswerTypeEnum;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,14 +15,10 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
 
-import java.util.List;
-
-
 @Component
 @RequiredArgsConstructor
 public class TaxiHubService extends TelegramLongPollingCommandBot {
-    private final QueryLoadService queryLoadService;
-    private final DynamicSqlExecutor executor;
+
     private static final Logger log = LoggerFactory.getLogger(TaxiHubService.class);
 
     private final BotConfig botConfig;
@@ -40,7 +33,7 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
         checkRestart(update, user);
         if (!isExpiredCallBack(update, user)) {
             PageDto currentPage = botPageService.getCurrentPage(user.getCurrentPageCode());
-            handleUpdate(update, currentPage);
+            messageBuilder.executeQueries(update, currentPage);
             user = clientService.getOrCreate(update);
             PageDto nextPage = botPageService.getNextPage(user, update);
             sendMessage(user, nextPage, update);
@@ -65,7 +58,7 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
                     );
                 } else if (botPageService.getAnswerType(update).equals(AnswerTypeEnum.CallBack) &&
                         nextPage.getAnswerType().contains(AnswerTypeEnum.CallBack)) {
-                    editMessage(messageBuilder.editMessage(user, nextPage));
+                    editMessage(messageBuilder.editMessage(user, nextPage, update));
                 } else if (botPageService.getAnswerType(update).equals(AnswerTypeEnum.CallBackOfVariable)) {
                     return;
                 } else {
@@ -135,30 +128,6 @@ public class TaxiHubService extends TelegramLongPollingCommandBot {
             return userState.getLastMessageId() > messageId;
         }
         return false;
-    }
-
-    @SneakyThrows
-    public void handleUpdate(Update update, PageDto currentPage) {
-        AnswerTypeEnum answerType = botPageService.getAnswerType(update);
-        currentPage.getQuery().forEach(query -> {
-            QueryConfig queryConfig = queryLoadService.getQueryByName(query);
-            if (queryConfig != null && (queryConfig.getAnswer().getType() != null || queryConfig.getAnswer().getExpectedAnswers()!=null)) {
-                AnswerDto answer = queryConfig.getAnswer();
-                assert answer.getType() != null;
-                boolean isValidAnswer = answer.getType().equals(answerType.toString()) || answer.getExpectedAnswers().contains(botPageService.getUpdateText(update));
-                if (isValidAnswer) {
-                    executor.executeQuery(queryConfig, update);
-                }
-            } else {
-                assert queryConfig != null;
-                executor.executeQuery(queryConfig, update);
-            }
-        });
-    }
-
-    public Boolean existAnswerConfig(QueryConfig queryConfig) {
-        AnswerDto answer = queryConfig.getAnswer();
-        return answer != null && answer.getType() != null && !answer.getExpectedAnswers().isEmpty();
     }
 
 }

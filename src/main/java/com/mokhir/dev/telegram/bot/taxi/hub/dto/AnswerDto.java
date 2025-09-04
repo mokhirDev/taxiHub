@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class AnswerDto {
-    private String type;
+    private List<String> type;
     private List<String> expectedAnswers;
 }

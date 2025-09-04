@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class QueriesConfig {
-    private List<QueryConfig> queries;
+public class QueriesConfigDto {
+    private List<QueryConfigDto> queries;
 }

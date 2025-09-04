@@ -38,7 +38,7 @@ public class ButtonService {
         for (List<ButtonDto> row : buttons) {
             KeyboardRow keyboardRow = new KeyboardRow();
             for (ButtonDto btn : row) {
-                if (btn.getButtonType() == ButtonTypeEnum.ReplyKeyboardMarkup) {
+                if (btn.getButtonType().getGroup().equals(ButtonTypeEnum.ReplyKeyboardMarkup.getGroup())) {
                     keyboardRow.add(toReplyButton(btn, locale));
                 }
             }
@@ -103,9 +103,9 @@ public class ButtonService {
     private KeyboardButton toReplyButton(ButtonDto dto, Locale locale) {
         KeyboardButton button = new KeyboardButton();
         button.setText(localizationService.getMessage(dto.getTextCode(), locale));
-        if (Boolean.TRUE.equals(dto.getContact())) {
+        if (dto.getButtonType().equals(ButtonTypeEnum.Contact)) {
             button.setRequestContact(true);
-        } else if (Boolean.TRUE.equals(dto.getLocation())) {
+        } else if (dto.getButtonType().equals(ButtonTypeEnum.Location)) {
             button.setRequestLocation(true);
         }
         return button;

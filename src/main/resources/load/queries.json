@@ -16,7 +16,7 @@
       "userId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "PASSENGER",
         "DRIVER"
@@ -31,7 +31,7 @@
       "contactNumber": "{update.message.contact.phoneNumber}"
     },
     "answer": {
-      "type": "Contact",
+      "type": ["Contact"],
       "expectedAnswers": []
     }
   },
@@ -43,7 +43,7 @@
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "kokand",
         "tashkent"
@@ -58,7 +58,7 @@
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "kokand",
         "tashkent"
@@ -73,7 +73,7 @@
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "*"
       ]
@@ -81,15 +81,15 @@
   },
   {
     "name": "saveSeatsCount",
-    "sql": "UPDATE orders SET passengers_count = :seatsCount, current_page_code = 'SEATS' WHERE chat_id = :chatId AND current_page_code = 'LEAVING_DATE'",
+    "sql": "UPDATE orders o SET passengers_count = v.variable_value, current_page_code = 'SEATS' FROM variables v WHERE v.message_id = :messageId AND o.chat_id = :chatId AND o.current_page_code = 'LEAVING_DATE';",
     "params": {
-      "seatsCount": "{update.callback.data}",
-      "chatId": "{update.callback.message.chat.id}"
+      "chatId": "{update.callback.message.chat.id}",
+      "messageId": "{update.callback.message.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
-        "save"
+        "save_seats_count"
       ]
     }
   },
@@ -101,7 +101,7 @@
       "chatId": "{update.message.chat.id}"
     },
     "answer": {
-      "type": "Text",
+      "type": ["Text"],
       "expectedAnswers": [
         "*"
       ]
@@ -114,9 +114,22 @@
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "skip_comment"
+      ]
+    }
+  },
+  {
+    "name": "orderDetails",
+    "sql": "SELECT * FROM orders o WHERE o.chat_id = :chatId ORDER BY o.id DESC LIMIT 1;",
+    "params": {
+      "chatId": "{update.callback.message.chat.id}"
+    },
+    "answer": {
+      "type": ["CallBack", "Text"],
+      "expectedAnswers": [
+        "*"
       ]
     }
   },
@@ -127,7 +140,7 @@
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "finish_order"
       ]
@@ -135,12 +148,12 @@
   },
   {
     "name": "cancelOrder",
-    "sql": "UPDATE orders SET status = 'CANCELLED', current_page_code = 'CANCELLED' WHERE chat_id = :chatId",
+    "sql": "UPDATE orders SET current_page_code = 'CANCELLED' WHERE chat_id = :chatId AND current_page_code = 'SEATS'",
     "params": {
       "chatId": "{update.callback.message.chat.id}"
     },
     "answer": {
-      "type": "CallBack",
+      "type": ["CallBack"],
       "expectedAnswers": [
         "cancel_order"
       ]

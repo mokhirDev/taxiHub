@@ -1,14 +1,13 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.Expression;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.PageDto;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.VariableDto;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.CallBackVariablesDto;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.*;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.UserState;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.Variable;
+import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.AnswerTypeEnum;
 import com.mokhir.dev.telegram.bot.taxi.hub.entity.enums.LocaleEnum;
+import com.mokhir.dev.telegram.bot.taxi.hub.util.TemplateUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -17,18 +16,19 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MessageBuilderService {
-    private final LocalizationService localizationService;
+    private final DynamicSqlExecutor executor;
     private final ButtonService buttonService;
-    private final VariableService variableService;
     private final BotPageService botPageService;
+    private final VariableService variableService;
+    private final QueryLoadService queryLoadService;
+    private final LocalizationService localizationService;
 
     public SendMessage createNewMessage(UserState user, PageDto page) {
         Long chatId = user.getUserId();
@@ -54,15 +54,11 @@ public class MessageBuilderService {
     }
 
 
-    public EditMessageText editMessage(UserState userState, PageDto nextPage) {
+    public EditMessageText editMessage(UserState userState, PageDto nextPage, Update update) {
         Locale locale = Locale.of(userState.getLocale().toString());
-
-        String text = nextPage.getMessage().stream()
-                .map(m -> localizationService.getMessage(m, locale))
-                .collect(Collectors.joining("\n"));
+        String text = buildMessage(nextPage, update, locale);
 
         Long chatId = userState.getUserId();
-
         InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.buildInlineKeyboard(userState, nextPage.getButtons(), locale);
         InlineKeyboardMarkup dateInlineKeyboardMarkup = buttonService.buildDateInlineKeyboard(nextPage.getButtons(), locale);
 
@@ -193,4 +189,40 @@ public class MessageBuilderService {
         return Locale.of(locale);
     }
 
+    @SneakyThrows
+    public List<Object> executeQueries(Update update, PageDto currentPage) {
+        List<Object> results = new ArrayList<>();
+        AnswerTypeEnum answerType = botPageService.getAnswerType(update);
+
+        for (String query : currentPage.getQuery()) {
+            QueryConfigDto queryConfigDto = queryLoadService.getQueryByName(query);
+            if (queryConfigDto != null && (queryConfigDto.getAnswer().getType() != null
+                    || queryConfigDto.getAnswer().getExpectedAnswers() != null)) {
+
+                AnswerDto answer = queryConfigDto.getAnswer();
+                assert answer.getType() != null;
+
+                boolean isValidAnswer = answer.getType().contains(answerType.toString()) &&
+                        (answer.getExpectedAnswers() != null &&
+                                (answer.getExpectedAnswers().contains("*") ||
+                                        answer.getExpectedAnswers().contains(botPageService.getUpdateText(update))));
+
+                if (isValidAnswer) {
+                    results.add(executor.execute(queryConfigDto, update));
+                }
+            } else {
+                assert queryConfigDto != null;
+                results.add(executor.execute(queryConfigDto, update));
+            }
+        }
+        return results;
+    }
+
+    public String buildMessage(PageDto nextPage, Update update, Locale locale) {
+        String text = nextPage.getMessage().stream()
+                .map(m -> localizationService.getMessage(m, locale))
+                .collect(Collectors.joining("\n"));
+        List<Object> object = executeQueries(update, nextPage);
+        return TemplateUtil.fillTemplate(text, object);
+    }
 }

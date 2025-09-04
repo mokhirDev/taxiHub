@@ -2,7 +2,7 @@ package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfig;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfigDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -18,7 +18,7 @@ public class QueryLoadService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ResourceLoader resourceLoader;
 
-    private List<QueryConfig> queriesConfig; // кеш для загруженных query
+    private List<QueryConfigDto> queriesConfig; // кеш для загруженных query
 
     @PostConstruct
     public void init() throws IOException {
@@ -26,18 +26,13 @@ public class QueryLoadService {
         Resource resource = resourceLoader.getResource("classpath:load/queries.json");
         queriesConfig = objectMapper.readValue(
                 resource.getInputStream(),
-                new TypeReference<List<QueryConfig>>() {
+                new TypeReference<List<QueryConfigDto>>() {
                 }
         );
     }
 
-    // Метод для получения загруженных query
-    public List<QueryConfig> getQueries() {
-        return queriesConfig;
-    }
-
     // Метод для поиска конкретного query по имени
-    public QueryConfig getQueryByName(String name) {
+    public QueryConfigDto getQueryByName(String name) {
         return queriesConfig.stream()
                 .filter(q -> q.getName().equals(name))
                 .findFirst()

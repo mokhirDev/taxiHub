@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class QueryConfig {
+public class QueryConfigDto {
     private String name;
     private String sql;
     private Map<String, String> params;

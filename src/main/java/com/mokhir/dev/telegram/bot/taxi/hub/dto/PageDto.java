@@ -17,7 +17,7 @@ public class PageDto {
     private String pageCode;
     private List<String> query;
     private Set<String> nextPage;
-    private Set<String> callBackCondition;
+    private Set<String> expectedCallBacks;
     private Set<AnswerTypeEnum> answerType;
     private Set<String> message;
     private List<List<ButtonDto>> buttons;

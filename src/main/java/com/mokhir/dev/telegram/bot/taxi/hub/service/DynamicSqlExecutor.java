@@ -1,6 +1,6 @@
 package com.mokhir.dev.telegram.bot.taxi.hub.service;
 
-import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfig;
+import com.mokhir.dev.telegram.bot.taxi.hub.dto.QueryConfigDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -11,17 +11,35 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class DynamicSqlExecutor {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void executeQuery(QueryConfig queryConfig, Update update) {
+    public Object execute(QueryConfigDto queryConfigDto, Update update) {
+        Map<String, Object> params = resolveParams(queryConfigDto, update);
+        NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        String sql = queryConfigDto.getSql().trim().toUpperCase();
+
+        if (sql.startsWith("SELECT")) {
+            // Вернуть результат
+            return namedTemplate.queryForList(queryConfigDto.getSql(), params);
+        } else if (sql.startsWith("UPDATE") || sql.startsWith("INSERT") || sql.startsWith("DELETE")) {
+            // Вернуть количество обновленных строк
+            return namedTemplate.update(queryConfigDto.getSql(), params);
+        } else {
+            throw new IllegalArgumentException("Неизвестный тип SQL-запроса: " + sql);
+        }
+    }
+    
+    
+
+    private Map<String, Object> resolveParams(QueryConfigDto queryConfigDto, Update update) {
         Map<String, Object> localVars = new HashMap<>();
 
-        queryConfig.getParams().forEach((key, template) -> {
+        queryConfigDto.getParams().forEach((key, template) -> {
             if (template.startsWith("{") && template.endsWith("}")) {
                 String path = template.substring(1, template.length() - 1);
                 localVars.put(key, extractFromUpdate(update, path));
@@ -30,8 +48,7 @@ public class DynamicSqlExecutor {
             }
         });
 
-        NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        namedTemplate.update(queryConfig.getSql(), localVars);
+        return localVars;
     }
 
     private Object extractFromUpdate(Update update, String path) {
@@ -55,6 +72,7 @@ public class DynamicSqlExecutor {
                 }
                 case "id" -> {
                     if (current instanceof Chat c) yield c.getId();
+                    else if (current instanceof Message m) yield m.getMessageId();
                     else yield null;
                 }
                 case "data" -> {
@@ -74,7 +92,6 @@ public class DynamicSqlExecutor {
                     else yield null;
                 }
                 default -> {
-                    // для динамических полей в тексте сообщения (например fromCity: "fromCity:Ташкент")
                     if (current instanceof String text) {
                         Map<String, String> map = Arrays.stream(text.split(","))
                                 .map(s -> s.split(":"))

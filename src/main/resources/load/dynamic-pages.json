@@ -3,7 +3,7 @@
     "pageCode": "start",
     "query": [],
     "message": [],
-    "callBackCondition": [],
+    "expectedCallBacks": [],
     "answerType": [
       "Text"
     ],
@@ -14,11 +14,13 @@
   },
   {
     "pageCode": "lang",
-    "query": ["saveLangToUser"],
+    "query": [
+      "saveLangToUser"
+    ],
     "message": [
       "choose.language"
     ],
-    "callBackCondition": [
+    "expectedCallBacks": [
       "back"
     ],
     "answerType": [
@@ -32,40 +34,30 @@
         {
           "textCode": "uz.flag",
           "callBack": "UZ",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "ru.flag",
           "callBack": "RU",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "en.flag",
           "callBack": "EN",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "role",
-    "query": ["saveRoleToUser"],
+    "query": [
+      "saveRoleToUser"
+    ],
     "message": [
       "choose.option"
     ],
-    "callBackCondition": [
+    "expectedCallBacks": [
       "UZ",
       "RU",
       "EN",
@@ -84,31 +76,19 @@
         {
           "textCode": "btn.driver",
           "callBack": "DRIVER",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.passenger",
           "callBack": "PASSENGER",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.back",
           "callBack": "back",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
@@ -119,7 +99,7 @@
     "message": [
       "driver.menu"
     ],
-    "callBackCondition": [
+    "expectedCallBacks": [
       "DRIVER"
     ],
     "answerType": [
@@ -133,22 +113,14 @@
         {
           "textCode": "join.to.group",
           "callBack": "join_to_group",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.back",
           "callBack": "back",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
@@ -159,7 +131,7 @@
     "message": [
       "passenger.menu"
     ],
-    "callBackCondition": [
+    "expectedCallBacks": [
       "PASSENGER",
       "main.menu",
       "cancel_order"
@@ -176,42 +148,32 @@
         {
           "textCode": "btn.create.order",
           "callBack": "create_order",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.my.orders",
           "callBack": "my_orders",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.back",
           "callBack": "back",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "phone_number",
-    "query": ["createOrder"],
-    "callBackCondition": [
-      "create_order"
+    "query": [
+      "createOrder"
+    ],
+    "expectedCallBacks": [
+      "create_order "
     ],
     "answerType": [
       "Contact"
@@ -226,19 +188,17 @@
       [
         {
           "textCode": "btn.share.contact",
-          "buttonType": "ReplyKeyboardMarkup",
-          "contact": true,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Contact"
         }
       ]
     ]
   },
   {
     "pageCode": "order_from",
-    "query": ["saveFromCity"],
-    "callBackCondition": [],
+    "query": [
+      "saveFromCity"
+    ],
+    "expectedCallBacks": [],
     "answerType": [
       "CallBack"
     ],
@@ -253,28 +213,22 @@
         {
           "textCode": "btn.city.kokand",
           "callBack": "kokand",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.city.tashkent",
           "callBack": "tashkent",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "order_to",
-    "query": ["saveToCity"],
-    "callBackCondition": [
+    "query": [
+      "saveToCity"
+    ],
+    "expectedCallBacks": [
       "kokand",
       "tashkent"
     ],
@@ -292,28 +246,22 @@
         {
           "textCode": "btn.city.kokand",
           "callBack": "kokand",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         },
         {
           "textCode": "btn.city.tashkent",
           "callBack": "tashkent",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "order_date",
-    "query": ["saveLeavingDate"],
-    "callBackCondition": [
+    "query": [
+      "saveLeavingDate"
+    ],
+    "expectedCallBacks": [
       "kokand",
       "tashkent"
     ],
@@ -331,85 +279,59 @@
         {
           "textCode": "{EEEE, d MMMM}+0",
           "callBack": "{d.dd}+0",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+1",
           "callBack": "{d.dd}+1",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+2",
           "callBack": "{d.dd}+2",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+3",
           "callBack": "{d.dd}+3",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+4",
           "callBack": "{d.dd}+4",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+5",
           "callBack": "{d.dd}+5",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ],
       [
         {
           "textCode": "{EEEE, d MMMM}+6",
           "callBack": "{d.dd}+6",
-          "buttonType": "Date",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "Date"
         }
       ]
     ]
   },
   {
     "pageCode": "order_seats",
-    "query": ["saveSeatsCount"],
-    "callBackCondition": [
+    "query": [
+      "saveSeatsCount"
+    ],
+    "expectedCallBacks": [
       "*"
     ],
     "answerType": [
@@ -427,48 +349,37 @@
           "textCode": "btn.seats.minus",
           "callBack": "minus",
           "buttonType": "Expression",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
           "isExpression": true
         },
         {
           "textCode": "btn.current.seats",
           "callBack": "seats_count",
           "buttonType": "Variable",
-          "isVariable": true,
-          "contact": false,
-          "location": false,
-          "isExpression": false
+          "clickable": false
         },
         {
           "textCode": "btn.seats.plus",
           "callBack": "plus",
           "buttonType": "Expression",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
           "isExpression": true
         }
       ],
       [
         {
           "textCode": "btn.save",
-          "callBack": "seats_count",
-          "buttonType": "Variable",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "callBack": "save_seats_count",
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "add_comment",
-    "query": ["saveComment"],
-    "callBackCondition": [
-      "save"
+    "query": [
+      "saveComment"
+    ],
+    "expectedCallBacks": [
+      "save_seats_count"
     ],
     "answerType": [
       "CallBack",
@@ -485,19 +396,19 @@
         {
           "textCode": "btn.skip",
           "callBack": "skip_comment",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
   },
   {
     "pageCode": "check_order",
-    "query": ["confirmOrder", "cancelOrder"],
-    "callBackCondition": [
+    "query": [
+      "orderDetails",
+      "confirmOrder",
+      "cancelOrder"
+    ],
+    "expectedCallBacks": [
       "skip_comment"
     ],
     "answerType": [
@@ -516,22 +427,14 @@
         {
           "textCode": "btn.confirm",
           "callBack": "finish_order",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ],
       [
         {
           "textCode": "btn.cancel",
           "callBack": "cancel_order",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]
@@ -539,7 +442,7 @@
   {
     "pageCode": "confirm_order",
     "query": [],
-    "callBackCondition": [
+    "expectedCallBacks": [
       "finish_order"
     ],
     "answerType": [
@@ -556,11 +459,7 @@
         {
           "textCode": "btn.main.menu",
           "callBack": "main.menu",
-          "buttonType": "InlineKeyboardMarkup",
-          "contact": false,
-          "location": false,
-          "isVariable": false,
-          "isExpression": false
+          "buttonType": "InlineKeyboardMarkup"
         }
       ]
     ]

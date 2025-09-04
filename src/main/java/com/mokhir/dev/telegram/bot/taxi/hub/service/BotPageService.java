@@ -66,7 +66,7 @@ public class BotPageService {
                 .map(this::getCurrentPage)
                 .filter(pageDto -> {
                     if (answerType.equals(AnswerTypeEnum.CallBack)) {
-                        return pageDto.getCallBackCondition().contains("*") || pageDto.getCallBackCondition().contains(update.getCallbackQuery().getData());
+                        return pageDto.getExpectedCallBacks().contains("*") || pageDto.getExpectedCallBacks().toString().contains(update.getCallbackQuery().getData());
                     }
                     return true;
                 })
